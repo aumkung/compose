@@ -1,50 +1,50 @@
 version: '3'
 services:
-  db_wp:
+  db:
     image: mariadb:10.2
     volumes:
       - "./data/db:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: rootpw
-      MYSQL_DATABASE: wp
-      MYSQL_USER: wp
-      MYSQL_PASSWORD: wpadmin
+      MYSQL_DATABASE: blog
+      MYSQL_USER: aum
+      MYSQL_PASSWORD: devpw
 
-  redis_wp:
+  redis:
     image: redis:3.2-alpine
 
-  nginx_wp:
+  nginx:
     image: nginx:alpine
     links:
-      - fpm_wp:fpm_wp
+      - fpm:fpm
     ports:
       - 80:80
     volumes:
-      - "../wordpress_site:/var/www/html"
+      - "../site:/var/www/html"
       - "./config/nginx.conf:/etc/nginx/conf.d/default.conf"
     environment:
         WEBROOT: "/var/www/html"
 
-  fpm_wp:
+  fpm:
     build: ./images/fpm
     links:
-      - db_wp:db_wp
-      - redis_wp:redis_wp
+      - db:db
+      - redis:redis
     volumes:
-      - "../wordpress_site:/var/www/html"
+      - "../site:/var/www/html"
       - "./config/php.ini:/usr/local/etc/php/php.ini"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     links:
-      - db_wp:db_wp
+      - db:db
     ports:
       - 8080:80
     environment:
-      PMA_USER: wp
-      PMA_PASSWORD: wpadmin
-      PMA_HOST: db_wp
+      PMA_USER: aum
+      PMA_PASSWORD: devpw
+      PMA_HOST: db
       MYSQL_ROOT_PASSWORD: rootpw
-      MYSQL_DATABASE: wp
-      MYSQL_USER: wp
-      MYSQL_PASSWORD: wpadmin
+      MYSQL_DATABASE: blog
+      MYSQL_USER: aum
+      MYSQL_PASSWORD: devpw
