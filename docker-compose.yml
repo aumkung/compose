@@ -2,13 +2,15 @@ version: '3'
 services:
   db:
     image: mariadb:10.2
-    volumes:
-      - "./data/db:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: rootpw
       MYSQL_DATABASE: blog
       MYSQL_USER: aum
       MYSQL_PASSWORD: devpw
+    command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
+    volumes:
+      - ./data/db:/var/lib/mysql
+      - ./config/innodb-fix.cnf:/etc/mysql/conf.d/innodb-fix.cnf
 
   redis:
     image: redis:3.2-alpine
